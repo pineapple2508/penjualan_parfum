@@ -1,0 +1,9 @@
+<%- include('partials/header', { title: 'User' }) %>
+
+<h2>Data User</h2>
+
+<% data.forEach(item => { %>
+  <p><%= item.username %></p>
+<% }) %>
+
+<%- include('partials/footer') %>

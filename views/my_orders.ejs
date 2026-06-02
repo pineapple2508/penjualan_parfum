@@ -1,0 +1,61 @@
+<%- include('partials/header', { title: 'Pesanan Saya' }) %>
+
+<div class="container">
+  <h2>📦 Riwayat Pesanan Saya</h2>
+
+  <% if (typeof success !== 'undefined' && success.length > 0) { %>
+    <div class="alert-success">✅ <%= success %></div>
+  <% } %>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Nama Pemesan</th>
+          <th>Total Harga</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (data.length > 0) { %>
+          <% data.forEach(item => { %>
+          <tr>
+            <td><%= new Date(item.order_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %></td>
+            <td><%= item.customer_name %></td>
+            <td class="price-cell">Rp <%= item.total_price.toLocaleString('id-ID') %></td>
+            <td>
+              <span class="status-badge status-<%= item.status ? item.status.toLowerCase() : 'pending' %>">
+                <%= item.status || 'Pending' %>
+              </span>
+            </td>
+          </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 2rem; color: #6b7280;">
+              Kamu belum punya pesanan
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+  h2 { color: #1e3c72; margin-bottom: 1.5rem; }
+  .alert-success { background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+  .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e5e7eb; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { background: #1e3c72; padding: 1rem 1.25rem; text-align: left; font-weight: 600; color: #FFD700; font-size: 0.75rem; text-transform: uppercase; border-bottom: 3px solid #FFC107; }
+  td { padding: 1rem 1.25rem; border-bottom: 1px solid #f3f4f6; color: #4b5563; }
+  tr:hover { background: #f0f4ff; }
+  .price-cell { font-weight: 600; color: #1e3c72; }
+  .status-badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+  .status-pending { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .status-selesai { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+</style>
+
+<%- include('partials/footer') %>

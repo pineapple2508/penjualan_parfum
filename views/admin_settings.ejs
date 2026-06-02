@@ -1,0 +1,112 @@
+<%- include('partials/header', { title: 'Pengaturan Web' }) %>
+
+<div class="admin-container">
+
+  <h2>Pengaturan Website</h2>
+
+  <form action="/admin/settings"
+        method="POST"
+        enctype="multipart/form-data"
+        class="settings-form">
+
+    <div class="card">
+
+      <h3>Banner Home</h3>
+
+      <% if(settings.bannerImage){ %>
+
+        <img src="<%= settings.bannerImage %>"
+             style="width:100%; border-radius:15px; margin-bottom:20px;">
+
+      <% } %>
+
+      <div class="form-group">
+        <label>Upload Banner Baru</label>
+        <input type="file" name="bannerImage">
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <h3>Home</h3>
+
+      <div class="form-group">
+        <label>Judul</label>
+        <input type="text"
+               name="homeTitle"
+               value="<%= settings.homeTitle %>">
+      </div>
+
+      <div class="form-group">
+        <label>Subtitle</label>
+        <input type="text"
+               name="homeSubtitle"
+               value="<%= settings.homeSubtitle %>">
+      </div>
+
+      <div class="form-group">
+        <label>Teks</label>
+
+        <textarea name="homeAboutText"
+                  rows="5"><%= settings.homeAboutText %></textarea>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn-save">
+      Simpan Perubahan
+    </button>
+
+  </form>
+
+</div>
+
+<style>
+
+.admin-container{
+  max-width:900px;
+  margin:auto;
+  padding:40px 20px;
+}
+
+.card{
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  margin-bottom:30px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.form-group{
+  margin-bottom:20px;
+}
+
+.form-group label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:bold;
+}
+
+.form-group input,
+.form-group textarea{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+.btn-save{
+  width:100%;
+  padding:15px;
+  border:none;
+  background:#1e3c72;
+  color:white;
+  border-radius:15px;
+  font-size:1rem;
+  cursor:pointer;
+}
+
+</style>
+
+<%- include('partials/footer') %>

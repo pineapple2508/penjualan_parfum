@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - Faturé</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- FONT BARU: Playfair Display (Elegan) + Poppins (Sederhana) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f8f9fa; color: #333; }
+    
+    .navbar { background: linear-gradient(135deg, #0f1c36, #1e3c72); color: white; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 70px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 1000; }
+    
+    .nav-brand .brand-link { color: #FFD700; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 28px; text-decoration: none; letter-spacing: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    
+    .nav-links { display: flex; gap: 5px; align-items: center; }
+    .nav-links a { color: rgba(255, 255, 255, 0.85); text-decoration: none; font-weight: 500; font-size: 14px; padding: 10px 18px; border-radius: 8px; display: flex; align-items: center; gap: 8px; transition: background 0.3s, color 0.3s; }
+    .nav-links a:hover { background: rgba(255, 215, 0, 0.15); color: #FFD700; }
+    
+    .nav-auth { display: flex; align-items: center; gap: 15px; }
+    .nav-auth span { color: #e0e0e0; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .nav-auth span i { font-size: 20px; color: #FFD700; }
+    
+    .btn-logout { background: transparent; color: #FFD700; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 600; font-size: 13px; border: 1px solid #FFD700; cursor: pointer; transition: 0.3s; }
+    .btn-logout:hover { background: #FFD700; color: #0f1c36; }
+    .btn-auth { color: #0f1c36; background: #FFC107; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 600; font-size: 13px; transition: background 0.3s; }
+    .btn-auth:hover { background: #FFD700; }
+    
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1001; }
+    .hamburger span { width: 25px; height: 3px; background: #FFD700; border-radius: 5px; transition: 0.3s; }
+
+    .content { padding: 0; min-height: calc(100vh - 150px); }
+
+    @media (max-width: 900px) {
+      .navbar { padding: 0 20px; }
+      .hamburger { display: flex; }
+      .nav-links, .nav-auth { 
+        display: none; 
+        flex-direction: column; 
+        width: 100%; 
+        background: #0f1c36; 
+        padding: 20px 0; 
+        border-top: 1px solid rgba(255,215,0,0.2);
+      }
+      .nav-links a, .nav-auth span, .nav-auth a { width: 100%; justify-content: center; }
+      .navbar.active .nav-links, .navbar.active .nav-auth { display: flex; }
+      .navbar.active { flex-wrap: wrap; height: auto; padding-bottom: 10px; }
+      .navbar.active .hamburger span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+      .navbar.active .hamburger span:nth-child(2) { opacity: 0; }
+      .navbar.active .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-brand">
+    <a href="/" class="brand-link">FATURÉ</a>
+  </div>
+  
+  <div class="hamburger" onclick="document.getElementById('navbar').classList.toggle('active')">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="nav-links">
+    <% if (!user || user.role !== 'admin') { %>
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/about"><i class="fas fa-info-circle"></i> About</a>
+      <a href="/products"><i class="fas fa-store"></i> Produk</a>
+    <% } %>
+
+    <% if (user && user.role === 'customer') { %>
+      <a href="/cart"><i class="fas fa-shopping-cart"></i> Keranjang</a>
+      <a href="/my-orders"><i class="fas fa-box"></i> Pesanan</a>
+    <% } %>
+
+    <% if (user && user.role === 'admin') { %>
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/admin/products"><i class="fas fa-cubes"></i> Produk</a>
+      <a href="/customers"><i class="fas fa-users"></i> Customer</a>
+      <a href="/orders"><i class="fas fa-receipt"></i> Order</a>
+      <a href="/admin/settings"><i class="fas fa-cogs"></i> Setting</a>
+    <% } %>
+  </div>
+
+  <div class="nav-auth">
+    <% if (user) { %>
+      <span><i class="fas fa-user-circle"></i> <%= user.username %></span>
+      <a href="/logout" class="btn-logout">Keluar</a>
+    <% } else { %>
+      <a href="/login" class="btn-auth">Masuk</a>
+      <a href="/register" class="btn-auth">Daftar</a>
+    <% } %>
+  </div>
+</nav>
+
+<div class="content">

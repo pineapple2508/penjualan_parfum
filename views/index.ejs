@@ -1,0 +1,109 @@
+<%- include('partials/header', { title: 'Faturé Store' }) %>
+
+<section class="hero">
+  <style>
+    .hero {
+      background-image: linear-gradient(rgba(0,0,0,0.01), rgba(0,0,0,0.01)), url("<%= settings.bannerImage || '/uploads/banner.png' %>");
+      width: 100%; height: 100vh; background-size: cover; background-position: center; position: relative;
+    }
+    .hero-content { position: absolute; bottom: 21.5%; left: 41.5%; transform: translateX(-50%); text-align: center; width: auto; padding: 0; }
+    .hero h1, .hero p { display: none !important; }
+    .hero-buttons { display: flex; justify-content: center; align-items: center; gap: 10px; }
+    .btn-primary { width: 135px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50px; background: #e4b768; color: #111; text-decoration: none; font-size: 0.75rem; font-weight: 700; transition: all 0.3s; }
+    .btn-primary:hover { background: #f1c982; }
+    .btn-secondary { width: 135px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50px; border: 1.5px solid #fff; background: transparent; color: #fff; text-decoration: none; font-size: 0.75rem; font-weight: 700; transition: all 0.3s; }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+
+    @media(max-width: 992px) { .hero-content { left: 50%; bottom: 16%; } }
+    @media(max-width: 768px) { 
+      .hero { height: auto; min-height: 100vh; background-size: contain; background-repeat: no-repeat; background-position: top center; background-color: #0f1c36; } 
+      .hero-content { bottom: 12%; left: 50%; } 
+      .hero-buttons { gap: 8px; } 
+      .btn-primary, .btn-secondary { width: 120px; height: 34px; font-size: 0.7rem; } 
+    }
+  </style>
+  <div class="hero-content">
+    <h1><%= settings.homeTitle %></h1>
+    <p><%= settings.homeSubtitle %></p>
+    <div class="hero-buttons">
+      <a href="/products" class="btn-primary">Belanja Sekarang</a>
+      <a href="/about" class="btn-secondary">Tentang Kami</a>
+    </div>
+  </div>
+</section>
+
+<section class="about-section">
+  <div class="container">
+    <h2 class="section-title">Keistimewaan Faturé</h2>
+    <!-- DIBERI FALLBACK JIKA DATA BELUM ADA DI DATABASE -->
+    <p class="about-text"><%= settings.perfumeDescription || 'Setiap botol Faturé diracik dengan esensi premium pilihan, menampilkan keanggunan dan ketahanan aroma yang luar biasa. Rasakan kemewahan sejati dalam setiap semprotan.' %></p>
+  </div>
+</section>
+
+<section class="products-section">
+  <div class="container">
+    <h2 class="section-title">Parfum Unggulan</h2>
+    <div class="product-grid">
+      <% if (products && products.length > 0) { %>
+        <% products.forEach(product => { %>
+          <div class="product-card">
+            <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
+            <div class="card-body">
+              <h3><%= product.name %></h3>
+              <p class="price">Rp <%= product.price.toLocaleString('id-ID') %></p>
+              <p class="description"><%= product.description ? product.description.substring(0, 80) + '...' : 'Parfum premium dengan aroma memukau.' %></p>
+              
+              <div class="btn-group">
+                <% if (user) { %>
+                  <a href="/orders/add/<%= product._id %>" class="btn-buy">Beli</a>
+                  <form action="/cart/add" method="POST" class="form-cart">
+                    <input type="hidden" name="product_id" value="<%= product._id %>">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn-cart">🛒</button>
+                  </form>
+                <% } else { %>
+                  <a href="/login" class="btn-buy">Login untuk Beli</a>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p style="text-align: center; color: #666; grid-column: 1/-1;">Belum ada produk saat ini.</p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-section { background: #f8fafc; padding: 80px 0; text-align: center; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+  /* FONT DIGANTI PLAYFAIR DISPLAY */
+  .section-title { font-size: 2.5rem; color: #1e3c72; font-family: 'Playfair Display', serif; margin-bottom: 20px; position: relative; display: block; text-align: center; width: 100%; }
+  .section-title::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 60px; height: 4px; background: #FFD700; border-radius: 2px; }
+  .about-text { max-width: 700px; margin: 30px auto 0; color: #64748b; line-height: 1.8; font-size: 1.1rem; }
+
+  .products-section { padding: 80px 0; background: white; }
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+  .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); transition: transform 0.3s; border: 1px solid #e2e8f0; }
+  .product-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(30, 60, 114, 0.15); }
+  .product-image { width: 100%; height: 250px; object-fit: cover; border-bottom: 3px solid #FFD700; }
+  .card-body { padding: 25px; text-align: center; }
+  .card-body h3 { font-family: 'Playfair Display', serif; margin: 0 0 10px 0; color: #0f1c36; font-size: 1.3rem; }
+  .price { font-size: 1.5rem; font-weight: 800; color: #1e3c72; margin: 0 0 15px; }
+  .description { font-size: 0.9rem; color: #64748b; line-height: 1.6; margin-bottom: 25px; min-height: 50px; }
+  
+  .btn-group { display: flex; gap: 10px; justify-content: center; }
+  .btn-buy { display: block; flex:1; background: #FFD700; color: #0f1c36; padding: 12px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 0.9rem; text-align: center; transition: 0.3s; }
+  .btn-buy:hover { background: #0f1c36; color: #FFD700; }
+  .form-cart { margin: 0; width: auto; }
+  .btn-cart { background: white; color: #0f1c36; border: 2px solid #0f1c36; padding: 12px 15px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+  .btn-cart:hover { background: #0f1c36; color: #FFD700; }
+
+  @media (max-width: 768px) {
+    .about-text { font-size: 1rem; }
+    .section-title { font-size: 2rem; }
+  }
+</style>
+
+<%- include('partials/footer') %>

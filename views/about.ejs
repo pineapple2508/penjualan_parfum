@@ -1,0 +1,76 @@
+<%- include('partials/header', { title: 'Tentang Kami' }) %>
+
+<section class="about-hero">
+  <div class="container">
+    <h1><%= settings.aboutTitle %></h1>
+    <p class="tagline"><%= settings.aboutTagline %></p>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="container">
+    <div class="grid-2">
+      <div class="text-col">
+        <h2><%= settings.aboutVisionTitle %></h2>
+        <% settings.aboutVisionText.split('\n').forEach(paragraph => { %>
+          <p><%= paragraph %></p>
+        <% }) %>
+      </div>
+      <div class="image-col">
+        <div class="placeholder-img">
+          <i class="fas fa-gem"></i>
+          <span>Premium Quality</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-item">
+        <i class="fas fa-leaf"></i>
+        <h3>Bahan Alami</h3>
+        <p>Diekstrak dari bahan alami terbaik untuk keamanan dan kenyamanan kulit.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-clock"></i>
+        <h3>Tahan Lama</h3>
+        <p>Formula konsentrat yang memastikan aroma bertahan seharian penuh.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-star"></i>
+        <h3>Eksklusif</h3>
+        <p>Desain botol mewah dan aroma unik yang tidak akan menemukan di tempat lain.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-hero { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 100px 0; text-align: center; }
+  .about-hero h1 { font-size: 3rem; margin: 0; color: #FFD700; letter-spacing: 3px; }
+  .tagline { font-size: 1.2rem; margin-top: 15px; font-style: italic; color: rgba(255,255,255,0.9); }
+  
+  .content-section { padding: 80px 0; background: white; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+  
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-bottom: 80px; align-items: center; }
+  .text-col h2 { color: #1e3c72; font-size: 2rem; margin-top: 0; }
+  .text-col p { color: #64748b; line-height: 1.8; font-size: 1.05rem; }
+  
+  .placeholder-img { background: #f1f5f9; height: 350px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #1e3c72; border: 2px dashed #cbd5e1; }
+  .placeholder-img i { font-size: 4rem; color: #FFD700; margin-bottom: 15px; }
+  .placeholder-img span { font-weight: 700; font-size: 1.2rem; }
+  
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; text-align: center; }
+  .feature-item { background: #f8fafc; padding: 40px 30px; border-radius: 15px; border: 1px solid #e2e8f0; transition: transform 0.3s; }
+  .feature-item:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(30, 60, 114, 0.1); }
+  .feature-item i { font-size: 2.5rem; color: #FFD700; margin-bottom: 20px; }
+  .feature-item h3 { color: #1e3c72; margin: 0 0 15px; }
+  .feature-item p { color: #64748b; line-height: 1.6; margin: 0; }
+
+  @media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .features { grid-template-columns: 1fr; }
+  }
+</style>
+
+<%- include('partials/footer') %>

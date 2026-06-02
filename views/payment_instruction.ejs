@@ -1,0 +1,77 @@
+<%- include('partials/header', { title: 'Pembayaran' }) %>
+
+<div class="container">
+  <div class="instruction-card">
+    <h2>💳 Instruksi Pembayaran</h2>
+    <p class="subtitle">Selesaikan pembayaran sebelum 24 jam</p>
+
+    <div class="order-summary">
+      <div class="summary-row">
+        <span>Total yang harus dibayar</span>
+        <span class="total-price">Rp <%= order.total_price.toLocaleString('id-ID') %></span>
+      </div>
+    </div>
+
+    <div class="payment-details">
+      <% if (order.payment_method === 'Transfer Bank') { %>
+        <h3>Transfer ke Rekening:</h3>
+        <div class="bank-info">
+          <p><strong>Bank BCA</strong></p>
+          <p class="account-number">1234567890</p>
+          <p>a.n. Faturé Store</p>
+        </div>
+      <% } else if (order.payment_method === 'E-Wallet') { %>
+        <h3>Transfer ke E-Wallet:</h3>
+        <div class="bank-info">
+          <p><strong>GoPay / OVO / DANA</strong></p>
+          <p class="account-number">081234567890</p>
+          <p>a.n. Faturé Admin</p>
+        </div>
+      <% } else if (order.payment_method === 'COD') { %>
+        <div class="cod-info">
+          <h3>✅ Bayar di Tempat (COD)</h3>
+          <p>Anda tidak perlu melakukan pembayaran sekarang. Siapkan uang pas saat pesanan tiba.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (order.status === 'Menunggu Pembayaran' && order.payment_method !== 'COD') { %>
+      <form action="/orders/confirm-payment/<%= order._id %>" method="POST" enctype="multipart/form-data" class="upload-form">
+        <label for="payment_proof" class="upload-label">
+          📷 Upload Bukti Transfer / E-Wallet
+        </label>
+        <input type="file" name="payment_proof" id="payment_proof" accept="image/*" required>
+        <button type="submit" class="btn-confirm">✅ Saya Sudah Melakukan Pembayaran</button>
+      </form>
+    <% } else if (order.status === 'Menunggu Konfirmasi') { %>
+      <div class="already-paid">✅ Bukti pembayaran sudah dikirim. Menunggu verifikasi Admin.</div>
+    <% } %>
+
+  </div>
+</div>
+
+<style>
+  .container { max-width: 600px; margin: 0 auto; padding: 2rem 1rem; }
+  .instruction-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+  h2 { color: #1e3c72; margin: 0 0 0.5rem; }
+  .subtitle { color: #777; margin-bottom: 1.5rem; font-size: 0.9rem; }
+  .order-summary { background: #f0f4ff; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; border: 1px solid #dbeafe; }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; }
+  .total-price { font-size: 1.5rem; font-weight: 800; color: #1e3c72; }
+  .payment-details { text-align: left; margin-bottom: 2rem; }
+  .payment-details h3 { font-size: 1rem; color: #333; margin-bottom: 1rem; }
+  .bank-info { background: #f9fafb; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb; }
+  .bank-info p { margin: 5px 0; color: #555; font-size: 0.9rem; }
+  .account-number { font-size: 1.4rem; font-weight: bold; color: #1e3c72; letter-spacing: 1px; }
+  .cod-info { background: #d1fae5; padding: 1.5rem; border-radius: 8px; border: 1px solid #6ee7b7; color: #065f46; }
+  .cod-info h3 { margin: 0 0 10px; }
+  
+  .upload-form { margin-top: 2rem; text-align: center; }
+  .upload-label { display: block; background: #f0f4ff; border: 2px dashed #1e3c72; padding: 20px; border-radius: 10px; cursor: pointer; font-weight: 600; color: #1e3c72; margin-bottom: 1rem; }
+  .upload-form input[type="file"] { display: none; }
+  .btn-confirm { width: 100%; padding: 1rem; background: #FFC107; color: #1e3c72; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .btn-confirm:hover { background: #FFD700; }
+  .already-paid { background: #e0f2fe; color: #0369a1; padding: 1rem; border-radius: 8px; font-weight: 600; }
+</style>
+
+<%- include('partials/footer') %>

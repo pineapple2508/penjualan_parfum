@@ -1,0 +1,78 @@
+<%- include('partials/header', { title: 'Edit Produk' }) %>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h2>Edit Produk</h2>
+      <p class="subtitle">Ubah data produk</p>
+    </div>
+    <a href="/admin/products" class="btn-back">← Kembali</a>
+  </div>
+
+  <!-- WAJIB PAKAI ENCTYPE UNTUK UPLOAD FOTO -->
+  <form action="/products/update/<%= data._id %>" method="POST" enctype="multipart/form-data" class="form">
+    <div class="form-group">
+      <label for="name">Nama Produk</label>
+      <input type="text" id="name" name="name" value="<%= data.name %>" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="price">Harga (Rp)</label>
+      <input type="number" id="price" name="price" value="<%= data.price %>" min="0" step="1000" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="stock">Stok</label>
+      <input type="number" id="stock" name="stock" value="<%= data.stock %>" min="0" required>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Deskripsi</label>
+      <textarea id="description" name="description" rows="4" style="width:100%; padding:0.875rem 1rem; border:2px solid #e5e7eb; border-radius:10px; font-size:1rem; font-family: 'Poppins', sans-serif; background:#fafbfc; box-sizing:border-box;"><%= data.description %></textarea>
+    </div>
+
+    <!-- PREVIEW FOTO LAMA -->
+    <div class="form-group">
+      <label>Foto Produk Saat Ini</label>
+      <% if (data.image) { %>
+        <img src="<%= data.image %>" alt="Foto Produk" style="width: 100%; max-width: 200px; border-radius: 10px; margin-bottom: 10px; border: 2px solid #e5e7eb;">
+      <% } else { %>
+        <p style="color: #94a3b8; font-size: 0.875rem;">Belum ada foto</p>
+      <% } %>
+    </div>
+
+    <!-- FORM UPLOAD FOTO BARU -->
+    <div class="form-group">
+      <label for="image">Ganti Foto Produk (Kosongkan jika tidak diganti)</label>
+      <input type="file" id="image" name="image" accept="image/*" style="padding: 10px; border: 2px dashed #e5e7eb; border-radius: 10px; width: 100%; box-sizing: border-box; cursor: pointer;">
+    </div>
+    
+    <div class="form-actions">
+      <a href="/admin/products" class="btn-secondary">Batal</a>
+      <button type="submit" class="btn-primary">Update</button>
+    </div>
+  </form>
+</div>
+
+<style>
+  .container { max-width: 500px; margin: 0 auto; padding: 2rem 1rem; font-family: 'Poppins', sans-serif; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  h2 { margin: 0 0 0.125rem 0; font-size: 1.75rem; font-weight: 600; color: #0f1c36; font-family: 'Playfair Display', serif; }
+  .subtitle { margin: 0; color: #6b7280; font-size: 0.875rem; }
+  .btn-back { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.5rem 1rem; color: #0f1c36; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 0.875rem; transition: all 0.2s ease; border: 1px solid #e5e7eb; background: white; }
+  .btn-back:hover { background: #0f1c36; color: #FFD700; border-color: #0f1c36; }
+  .form { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; }
+  .form-group { margin-bottom: 1.5rem; }
+  label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #0f1c36; font-size: 0.875rem; }
+  input[type="text"], input[type="number"] { width: 100%; padding: 0.875rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; background: #fafbfc; transition: all 0.2s ease; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+  input[type="text"]:focus, input[type="number"]:focus, textarea:focus { outline: none; border-color: #FFD700; background: white; box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2); }
+  .form-actions { display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f3f4f6; }
+  .btn-secondary, .btn-primary { flex: 1; padding: 0.875rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.875rem; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; }
+  .btn-secondary { background: #f8fafc; color: #6b7280; border: 2px solid #e5e7eb; }
+  .btn-secondary:hover { background: #f1f5f9; border-color: #cbd5e1; }
+  .btn-primary { background: #FFD700; color: #0f1c36; }
+  .btn-primary:hover { background: #e4b768; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4); }
+  @media (max-width: 640px) { .container { padding: 1.5rem 1rem; } .header { flex-direction: column; gap: 1rem; align-items: stretch; text-align: center; } .form { padding: 1.5rem; } .form-actions { flex-direction: column; } }
+</style>
+
+<%- include('partials/footer') %>

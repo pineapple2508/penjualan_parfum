@@ -1,0 +1,84 @@
+<%- include('partials/header', { title: 'Kelola Produk' }) %>
+
+<div class="admin-container">
+  <div class="page-header">
+    <div>
+      <h2>Kelola Produk</h2>
+      <p class="subtitle">Daftar produk parfum Faturé</p>
+    </div>
+    <a href="/products/add" class="btn-add">+ Tambah Produk</a>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Foto</th>
+            <th>Nama Produk</th>
+            <th>Harga</th>
+            <th>Stok</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (data && data.length > 0) { %>
+            <% data.forEach(p => { %>
+            <tr>
+              <td>
+                <img src="<%= p.image %>" alt="<%= p.name %>" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 2px solid #e2e8f0;">
+              </td>
+              <td><strong><%= p.name %></strong></td>
+              <td>Rp <%= p.price.toLocaleString('id-ID') %></td>
+              <td><span class="badge-stock"><%= p.stock %></span></td>
+              <td>
+                <div class="action-group">
+                  <a href="/products/edit/<%= p._id %>" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                  <a href="/products/delete/<%= p._id %>" class="btn-delete" onclick="return confirm('Yakin hapus produk ini?')"><i class="fas fa-trash"></i> Hapus</a>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="empty-state">Belum ada produk</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .admin-container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+  .page-header h2 { margin: 0; color: #0f1c36; font-family: 'Playfair Display', serif; }
+  .subtitle { margin: 5px 0 0; color: #64748b; font-size: 0.9rem; }
+  
+  .btn-add { background: #FFD700; color: #0f1c36; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: 0.3s; }
+  .btn-add:hover { background: #e4b768; }
+
+  .card { background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; }
+  .table-responsive { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f8fafc; padding: 16px 20px; text-align: left; font-weight: 700; color: #475569; font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
+  td { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+  
+  .badge-stock { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
+  
+  .action-group { display: flex; gap: 8px; }
+  .btn-edit { background: #1e3c72; color: white; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: 0.3s; }
+  .btn-edit:hover { background: #2a5298; }
+  .btn-delete { background: #ef4444; color: white; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: 0.3s; }
+  .btn-delete:hover { background: #dc2626; }
+
+  .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
+
+  @media (max-width: 768px) {
+    .page-header { flex-direction: column; gap: 15px; align-items: stretch; text-align: center; }
+    th, td { padding: 12px; font-size: 0.85rem; }
+  }
+</style>
+
+<%- include('partials/footer') %>

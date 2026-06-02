@@ -1,0 +1,129 @@
+<%- include('partials/header', { title: 'Data Order' }) %>
+
+<div class="admin-container">
+  <div class="page-header">
+    <div>
+      <h2>Data Pesanan</h2>
+      <p class="subtitle">Kelola pesanan dan verifikasi bukti pembayaran</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Item Pesanan</th>
+            <th>Pengiriman</th>
+            <th>Total + Ongkir</th>
+            <th>Status & Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (data.length > 0) { %>
+            <% data.forEach(item => { %>
+            <tr>
+              <td>
+                <div class="customer-info">
+                  <div class="avatar"><%= item.customer_name.charAt(0).toUpperCase() %></div>
+                  <div>
+                    <div class="name"><%= item.customer_name %></div>
+                    <div class="id-text"><%= item.customer_email %></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <!-- MENAMPILKAN DAFTAR ITEM DARI ORDERITEM -->
+                <div class="order-items">
+                  <% if (item.itemsData && item.itemsData.length > 0) { %>
+                    <% item.itemsData.forEach(prod => { %>
+                      <div class="item-row">
+                        <span class="item-name"><%= prod.product_id ? prod.product_id.name : 'Produk Dihapus' %></span>
+                        <span class="item-qty">x<%= prod.quantity %> (Rp <%= prod.subtotal.toLocaleString('id-ID') %>)</span>
+                      </div>
+                    <% }) %>
+                  <% } else { %>
+                    <span class="id-text">Tidak ada detail item</span>
+                  <% } %>
+                </div>
+              </td>
+              <td>
+                <div style="font-weight: 600; font-size: 0.85rem;"><i class="fas fa-truck" style="color: #94a3b8; margin-right: 5px;"></i> <%= item.shipping_service %></div>
+                <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Ongkir: Rp <%= (item.shipping_cost || 0).toLocaleString('id-ID') %></div>
+                <% if (item.payment_proof) { %>
+                  <a href="<%= item.payment_proof %>" target="_blank" class="btn-view-proof">📷 Lihat Bukti Bayar</a>
+                <% } %>
+              </td>
+              <td>
+                <div class="price-cell">Rp <%= item.total_price.toLocaleString('id-ID') %></div>
+                <div class="id-text" style="margin-top:4px;"><span class="badge-payment"><%= item.payment_method %></span></div>
+              </td>
+              <td>
+                <form action="/orders/update-status/<%= item._id %>" method="POST" class="status-form">
+                  <select name="status" class="status-select">
+                    <option value="Menunggu Pembayaran" <%= item.status === 'Menunggu Pembayaran' ? 'selected' : '' %>>⏳ Menunggu Bayar</option>
+                    <option value="Menunggu Konfirmasi" <%= item.status === 'Menunggu Konfirmasi' ? 'selected' : '' %>>💳 Menunggu Konfirmasi</option>
+                    <option value="Diproses" <%= item.status === 'Diproses' ? 'selected' : '' %>>📦 Diproses</option>
+                    <option value="Dikirim" <%= item.status === 'Dikirim' ? 'selected' : '' %>>🚚 Dikirim</option>
+                    <option value="Selesai" <%= item.status === 'Selesai' ? 'selected' : '' %>>✅ Selesai</option>
+                    <option value="Dibatalkan" <%= item.status === 'Dibatalkan' ? 'selected' : '' %>>❌ Dibatalkan</option>
+                  </select>
+                  <button type="submit" class="btn-update-status">Update</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="empty-state">
+                <i class="fas fa-receipt"></i>
+                <p>Belum ada pesanan masuk</p>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .admin-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  .page-header { margin-bottom: 2rem; }
+  .page-header h2 { margin: 0; color: #1e3c72; font-size: 1.8rem; }
+  .subtitle { margin: 5px 0 0; color: #64748b; font-size: 0.9rem; }
+
+  .card { background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow: hidden; }
+  .table-responsive { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f8fafc; padding: 16px 20px; text-align: left; font-weight: 700; color: #475569; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #e2e8f0; }
+  td { padding: 20px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+  tr:hover { background: #f8fafc; }
+  tr:last-child td { border-bottom: none; }
+
+  .customer-info { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: #FFD700; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; }
+  .name { font-weight: 600; color: #1e293b; font-size: 0.95rem; }
+  .id-text { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+
+  .order-items { background: #f8fafc; border-radius: 8px; padding: 10px; border: 1px solid #e2e8f0; }
+  .item-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
+  .item-row:last-child { margin-bottom: 0; }
+  .item-name { color: #334155; font-weight: 500; }
+  .item-qty { color: #64748b; font-weight: 600; }
+
+  .price-cell { font-weight: 700; color: #1e3c72; font-size: 1rem; }
+  .badge-payment { background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+  .btn-view-proof { display: inline-block; margin-top: 8px; font-size: 0.75rem; color: #0369a1; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+
+  .status-form { display: flex; flex-direction: column; gap: 8px; }
+  .status-select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: #f9fafb; color: #333; box-sizing: border-box; }
+  .btn-update-status { background: #1e3c72; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+  .btn-update-status:hover { background: #2a5298; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; }
+  .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; }
+</style>
+
+<%- include('partials/footer') %>

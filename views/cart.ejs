@@ -1,0 +1,90 @@
+<%- include('partials/header', { title: 'Keranjang' }) %>
+
+<div class="container">
+  <h2>🛒 Keranjang Belanja</h2>
+
+  <% if (typeof success !== 'undefined' && success.length > 0) { %>
+    <div class="alert-success">✅ <%= success %></div>
+  <% } %>
+
+  <% if (cart.length > 0) { %>
+    <div class="cart-layout">
+      <div class="cart-items">
+        <% cart.forEach(item => { %>
+          <div class="cart-item">
+            <div class="item-info">
+              <h3><%= item.name %></h3>
+              <p>Rp <%= item.price.toLocaleString('id-ID') %> x <%= item.quantity %></p>
+            </div>
+            <div class="item-actions">
+              <span class="item-total">Rp <%= (item.price * item.quantity).toLocaleString('id-ID') %></span>
+              <a href="/cart/remove/<%= item.productId %>" class="btn-remove" onclick="return confirm('Hapus item?')">✕</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="checkout-form">
+        <h3>Detail Checkout</h3>
+        <form action="/checkout" method="POST">
+          <div class="form-group"><label>Nama</label><input type="text" name="customer_name" required></div>
+          <div class="form-group"><label>Email</label><input type="email" name="customer_email" required></div>
+          <div class="form-group"><label>No HP</label><input type="tel" name="customer_phone" required></div>
+          <div class="form-group"><label>Alamat</label><textarea name="customer_address" rows="2" required></textarea></div>
+          
+          <div class="form-group">
+            <label>Jasa Pengiriman</label>
+            <select name="shipping_service" required>
+              <option value="JNE Reguler">JNE Reguler (Rp 20.000)</option>
+              <option value="J&T Express">J&T Express (Rp 18.000)</option>
+              <option value="SiCepat BEST">SiCepat BEST (Rp 25.000)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Metode Pembayaran</label>
+            <select name="payment_method" required>
+              <option value="Transfer Bank">Transfer Bank</option>
+              <option value="E-Wallet">E-Wallet</option>
+              <option value="COD">COD (Bayar di Tempat)</option>
+            </select>
+          </div>
+
+          <div class="form-group"><label>Tanggal</label><input type="date" name="order_date" required></div>
+          <button type="submit" class="btn-checkout">Checkout Semua</button>
+        </form>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="empty-cart">
+      <p>Keranjang masih kosong.</p>
+      <a href="/products" class="btn-back-shop">Lanjut Belanja</a>
+    </div>
+  <% } %>
+</div>
+
+<style>
+  .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+  h2 { color: #1e3c72; margin-bottom: 1.5rem; }
+  .alert-success { background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+  .cart-layout { display: flex; gap: 2rem; }
+  .cart-items { flex: 1.5; }
+  .checkout-form { flex: 1; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; }
+  .cart-item { display: flex; justify-content: space-between; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 1rem; }
+  .item-info h3 { margin: 0; font-size: 1rem; color: #1e3c72; }
+  .item-info p { margin: 5px 0 0; font-size: 0.85rem; color: #666; }
+  .item-actions { display: flex; align-items: center; gap: 15px; }
+  .item-total { font-weight: bold; color: #1e3c72; }
+  .btn-remove { color: #dc2626; text-decoration: none; font-weight: bold; font-size: 1.2rem; }
+  .checkout-form h3 { margin: 0 0 1rem 0; color: #1e3c72; border-bottom: 2px solid #f0f4ff; padding-bottom: 0.5rem; }
+  .form-group { margin-bottom: 0.8rem; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; box-sizing: border-box; }
+  .btn-checkout { width: 100%; padding: 0.7rem; background: #FFC107; color: #1e3c72; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  .btn-checkout:hover { background: #FFD700; }
+  .empty-cart { text-align: center; padding: 3rem; background: white; border-radius: 12px; color: #666; }
+  .btn-back-shop { display: inline-block; margin-top: 1rem; background: #1e3c72; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 6px; }
+  @media (max-width: 768px) { .cart-layout { flex-direction: column; } }
+</style>
+
+<%- include('partials/footer') %>
