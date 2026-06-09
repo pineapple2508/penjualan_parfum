@@ -33,7 +33,7 @@ app.use(session({
   saveUninitialized: false,
   
 store: MongoStore.create({
-  mongoUrl: process.env.MONGO_URI || MONGO_URI,
+  mongoUrl: process.env.MONGO_URI,
   collectionName: 'sessions'
 }),
   cookie: {
@@ -42,10 +42,6 @@ store: MongoStore.create({
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   }
-}));app.use(session({ 
-  secret: process.env.SESSION_SECRET || 'secret123', 
-  resave: false, 
-  saveUninitialized: true 
 }));
 app.use(flash());
 
@@ -56,27 +52,24 @@ app.use((req, res, next) => {
 });
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/parfum_store';
-
 mongoose.connect(MONGO_URI, {
   serverSelectionTimeoutMS: 30000,
   socketTimeoutMS: 45000
 })
-  mongoose.connection.on('connected', () => {
-  console.log('MongoDB Atlas Connected');
-});
-
-mongoose.connection.on('error', (err) => {
-  console.log('MongoDB Error:', err);
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB Disconnected');
-});
 .then(() => {
   console.log('MongoDB Connected');
 })
 .catch((err) => {
   console.error('MongoDB Error:', err);
+});
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB Atlas Connected');
+});
+mongoose.connection.on('error', (err) => {
+  console.log('MongoDB Error:', err);
+});
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB Disconnected');
 });
 
 const Product = require('./models/Product');
