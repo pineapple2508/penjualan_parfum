@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifikasi OTP - FATURÉ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f1c36, #1e3c72);
+      display: flex; justify-content: center; align-items: center;
+      position: relative; overflow-y: auto; padding: 40px 20px;
+    }
+    .circle { position: fixed; border-radius: 50%; opacity: 0.1; pointer-events: none; z-index: 0; }
+    .c1 { width: 400px; height: 400px; background: #FFD700; top: -100px; left: -100px; }
+    .c2 { width: 300px; height: 300px; background: #ffffff; bottom: -80px; right: -80px; }
+    .c3 { width: 150px; height: 150px; background: #FFD700; top: 20%; right: 10%; opacity: 0.05; }
+    
+    .auth-card {
+      background: #ffffff; padding: 40px 35px; border-radius: 24px;
+      width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative; z-index: 10;
+    }
+    .auth-header { text-align: center; margin-bottom: 30px; }
+    .auth-header h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #0f1c36; letter-spacing: 3px; }
+    .auth-header p { color: #64748b; font-size: 0.9rem; margin-top: 5px; line-height: 1.5; }
+
+    .alert-error { background: #fef2f2; color: #dc2626; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; text-align: center; }
+
+    .input-group {
+      display: flex; align-items: center; background: #f8fafc;
+      border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 25px;
+      transition: 0.3s;
+    }
+    .input-group:focus-within { border-color: #FFD700; box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2); }
+    
+    .input-icon {
+      width: 50px; display: flex; justify-content: center; align-items: center;
+      color: #1e3c72; font-size: 1.1rem; background: #eef2f7; 
+      border-right: 1px solid #e2e8f0; height: 100%; border-radius: 12px 0 0 12px;
+      padding: 12px 0;
+    }
+    .input-group input {
+      flex: 1; border: none; outline: none; padding: 14px 15px;
+      background: transparent; font-family: 'Poppins', sans-serif;
+      font-size: 1.8rem; font-weight: 700; color: #0f1c36; text-align: center; letter-spacing: 10px;
+    }
+    .input-group input::placeholder { color: #cbd5e1; letter-spacing: 5px; font-size: 1.2rem; }
+
+    .btn-auth-submit {
+      width: 100%; padding: 14px; background: #FFD700; color: #0f1c36; border: none;
+      border-radius: 50px; font-weight: 700; font-size: 1rem; letter-spacing: 1px;
+      cursor: pointer; font-family: 'Poppins', sans-serif; margin-top: 10px; transition: 0.3s;
+    }
+    .btn-auth-submit:hover { background: #e4b768; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+
+    .auth-footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+
+    @media (max-width: 480px) { .auth-card { padding: 30px 20px; } .auth-header h2 { font-size: 2rem; } .input-group input { letter-spacing: 5px; font-size: 1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>FATURÉ</h2>
+      <p>Masukkan kode OTP yang dikirim ke email Anda</p>
+    </div>
+
+    <% if (error && error.length > 0) { %><div class="alert-error"><%= error %></div><% } %>
+
+    <form action="/verify-otp" method="POST">
+      <div class="input-group">
+        <div class="input-icon"><i class="fas fa-shield-halved"></i></div>
+        <input type="text" name="otp" placeholder="• • • • • •" maxlength="6" required>
+      </div>
+      <button type="submit" class="btn-auth-submit">VERIFIKASI</button>
+    </form>
+
+    <div class="auth-footer">
+      Kode OTP berlaku selama 5 menit.<br>Jangan berikan kode ini kepada siapa pun.
+    </div>
+  </div>
+</body>
+</html>
