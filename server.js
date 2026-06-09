@@ -31,10 +31,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'secret123',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: 'sessions'
-  }),
+  
+store: MongoStore.create({
+  mongoUrl: process.env.MONGO_URI || MONGO_URI,
+  collectionName: 'sessions'
+}),
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
