@@ -403,6 +403,10 @@ app.post('/login', async (req, res) => {
       return res.redirect('/login');
     }
 
+    if (!user.isVerified) {
+    req.flash('error', 'Akun belum diverifikasi');
+    return res.redirect('/login');
+    }
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
@@ -440,16 +444,113 @@ app.get('/register', (req, res) => {
   res.render('register', { title: 'Register', error: req.flash('error') }); 
 });
 
-app.post('/register', async (req, res) => { 
-  const { username, password, confirmPassword } = req.body; 
-  if(password !== confirmPassword) { req.flash('error', 'Password tidak cocok!'); return res.redirect('/register'); } 
-  const existingUser = await User.findOne({ username }); 
-  if(existingUser) { req.flash('error', 'Username sudah digunakan!'); return res.redirect('/register'); } 
-  const hashedPassword = await bcrypt.hash(password, 10); 
-  const newUser = new User({ username, password: hashedPassword, role: 'customer' }); 
-  await newUser.save(); 
-  req.flash('success', 'Registrasi berhasil!'); 
-  res.redirect('/login'); 
+app.post('/register', async (req, res) => {
+  try {
+
+    const { username, email, password, confirmPassword } = req.body;
+
+    if (password !== confirmPassword) {
+      req.flash('error', 'Password tidak cocok!');
+      return res.redirect('/register');
+    }
+
+    const existingUser = await User.findOne({
+      $or: [
+        { username },
+        { email }
+      ]
+    });
+
+    if (existingUser) {
+      req.flash('error', 'Username atau Email sudah digunakan!');
+      return res.redirect('/register');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const otpExpires = new Date(
+      Date.now() + 5 * 60 * 1000
+    );
+
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: 'customer',
+      isVerified: false,
+      otp,
+      otpExpires
+    });
+
+    await newUser.save();
+
+    console.log("OTP:", otp);
+
+    req.session.pendingUser = newUser._id;
+
+    res.redirect('/verify-otp');
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
+// ROUTE HALAMAN OTP
+app.get('/verify-otp', (req, res) => {
+  res.render('verify_otp', {
+    error: req.flash('error')
+  });
+});
+
+// ROUTE VERIFIKASI OTP
+app.post('/verify-otp', async (req, res) => {
+  try {
+
+    const { otp } = req.body;
+
+    if (!req.session.pendingUser) {
+      req.flash('error', 'Session OTP tidak ditemukan');
+      return res.redirect('/register');
+    }
+
+    const user = await User.findById(
+      req.session.pendingUser
+    );
+
+    if (!user) {
+      req.flash('error', 'User tidak ditemukan');
+      return res.redirect('/register');
+    }
+
+    if (user.otp !== otp) {
+      req.flash('error', 'OTP salah');
+      return res.redirect('/verify-otp');
+    }
+
+    if (user.otpExpires < new Date()) {
+      req.flash('error', 'OTP sudah kadaluarsa');
+      return res.redirect('/verify-otp');
+    }
+
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+
+    await user.save();
+
+    delete req.session.pendingUser;
+
+    req.flash('success', 'Registrasi berhasil');
+
+    res.redirect('/login');
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
 });
 
 app.get('/logout', (req, res) => { 
