@@ -2,11 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const path = require('path');
 const app = express();
+app.set('trust proxy', 1);
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -25,7 +27,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
-app.use(session({ 
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'secret123',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions'
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
+}));app.use(session({ 
   secret: process.env.SESSION_SECRET || 'secret123', 
   resave: false, 
   saveUninitialized: true 
@@ -39,9 +55,28 @@ app.use((req, res, next) => {
 });
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/parfum_store';
-mongoose.connect(MONGO_URI)
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.log(err));
+
+mongoose.connect(MONGO_URI, {
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000
+})
+  mongoose.connection.on('connected', () => {
+  console.log('MongoDB Atlas Connected');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.log('MongoDB Error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB Disconnected');
+});
+.then(() => {
+  console.log('MongoDB Connected');
+})
+.catch((err) => {
+  console.error('MongoDB Error:', err);
+});
 
 const Product = require('./models/Product');
 const Customer = require('./models/Customer');
@@ -175,14 +210,23 @@ app.post('/checkout', isLogin, async (req, res) => {
   }
 });
 
-app.get('/payment-instruction/:id', isLogin, async (req, res) => { 
-  try { 
-    const order = await Order.findById(req.params.id); 
-    if (!order || order.user_id !== req.session.user._id) return res.send('Pesanan tidak ditemukan'); 
-    res.render('payment_instruction', { title: 'Instruksi Pembayaran', order }); 
-  } catch (err) { 
-    res.send('Terjadi kesalahan'); 
-  } 
+app.get('/payment-instruction/:id', isLogin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (
+      !order ||
+      order.user_id.toString() !== req.session.user._id.toString()
+    ) {
+      return res.send('Pesanan tidak ditemukan');
+    }
+    res.render('payment_instruction', {
+      title: 'Instruksi Pembayaran',
+      order
+    });
+  } catch (err) {
+    console.log(err);
+    res.send('Terjadi kesalahan');
+  }
 });
 
 app.post('/orders/confirm-payment/:id', isLogin, upload.single('payment_proof'), async (req, res) => { 
@@ -326,14 +370,49 @@ app.get('/login', (req, res) => {
   res.render('login', { title: 'Login', error: req.flash('error'), success: req.flash('success') }); 
 });
 
-app.post('/login', async (req, res) => { 
-  const { username, password } = req.body; 
-  const user = await User.findOne({ username }); 
-  if(!user) { req.flash('error', 'Username tidak ditemukan!'); return res.redirect('/login'); } 
-  const match = await bcrypt.compare(password, user.password); 
-  if(!match) { req.flash('error', 'Password salah!'); return res.redirect('/login'); } 
-  req.session.user = user; 
-  res.redirect('/'); 
+app.post('/login', async (req, res) => {
+  try {
+
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      req.flash('error', 'Username tidak ditemukan!');
+      return res.redirect('/login');
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      req.flash('error', 'Password salah!');
+      return res.redirect('/login');
+    }
+
+    req.session.user = {
+      _id: user._id,
+      username: user.username,
+      role: user.role
+    };
+
+    req.session.save((err) => {
+
+      if (err) {
+        console.log(err);
+        req.flash('error', 'Gagal membuat session');
+        return res.redirect('/login');
+      }
+
+      return res.redirect('/');
+    });
+
+  } catch (err) {
+
+    console.log(err);
+    req.flash('error', 'Terjadi kesalahan saat login');
+    res.redirect('/login');
+
+  }
 });
 
 app.get('/register', (req, res) => { 
