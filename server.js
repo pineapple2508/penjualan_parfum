@@ -10,16 +10,24 @@ const path = require('path');
 const app = express();
 app.set('trust proxy', 1);
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'fature-store',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp']
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'ejs');
@@ -255,7 +263,9 @@ app.get('/products/add', isLogin, isAdmin, (req, res) => {
 app.post('/products/add', isLogin, isAdmin, upload.single('image'), async (req, res) => { 
   try {
     const { name, price, stock, description } = req.body; 
-    const image = req.file ? '/uploads/' + req.file.filename : '/uploads/default-perfume.png';
+    const image = req.file
+  ? req.file.path
+  : '';
     await Product.create({ name, price, stock, description, image }); 
     res.redirect('/admin/products'); 
   } catch (err) {
@@ -350,7 +360,7 @@ app.post('/admin/settings', isLogin, isAdmin, upload.single('bannerImage'), asyn
     Object.assign(settings, req.body);
   }
   if (req.file) { 
-    settings.bannerImage = '/uploads/' + req.file.filename; 
+    settings.bannerImage = req.file.path; 
   }
   await settings.save();
   req.flash('success', 'Pengaturan berhasil disimpan!');
