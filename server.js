@@ -9,7 +9,6 @@ const multer = require('multer');
 const path = require('path');
 const app = express();
 app.set('trust proxy', 1);
-
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 
@@ -260,20 +259,29 @@ app.get('/products/add', isLogin, isAdmin, (req, res) => {
   res.render('add_products', { title: 'Tambah Produk' }); 
 });
 
-app.post('/products/add', isLogin, isAdmin, upload.single('image'), async (req, res) => { 
+app.post('/products/add', isLogin, isAdmin, upload.single('image'), async (req, res) => {
   try {
-    const { name, price, stock, description } = req.body; 
+    const { name, price, stock, description } = req.body;
+
     const image = req.file
-  ? req.file.path
-  : '';
-    await Product.create({ name, price, stock, description, image }); 
-    res.redirect('/admin/products'); 
-  } catch (err) {
-    console.log(err);
-    res.send('Gagal menambah produk');
+      ? req.file.path
+      : 'https://via.placeholder.com/300x300.png?text=No+Image';
+    
+    console.log('FILE:', req.file);
+    await Product.create({
+      name,
+      price,
+      stock,
+      description,
+      image
+    });
+    res.redirect('/admin/products');
+  } 
+  catch (err) {
+    console.log('ERROR PRODUCT:', err);
+    res.status(500).send(err.message);
   }
 });
-
 app.get('/products/delete/:id', isLogin, isAdmin, async (req, res) => { 
   await Product.findByIdAndDelete(req.params.id); 
   res.redirect('/admin/products'); 
@@ -290,7 +298,7 @@ app.post('/products/update/:id', isLogin, isAdmin, upload.single('image'), async
     const updateData = { name, price, stock, description };
     
     if (req.file) {
-      updateData.image = '/uploads/' + req.file.filename;
+    updateData.image = req.file.path;
     }
 
     await Product.findByIdAndUpdate(req.params.id, updateData); 
@@ -353,18 +361,27 @@ app.get('/admin/settings', isLogin, isAdmin, async (req, res) => {
 });
 
 app.post('/admin/settings', isLogin, isAdmin, upload.single('bannerImage'), async (req, res) => {
-  let settings = await Setting.findOne();
-  if (!settings) {
-    settings = new Setting(req.body);
-  } else {
-    Object.assign(settings, req.body);
+  try {
+    let settings = await Setting.findOne();
+
+    if (!settings) {
+      settings = new Setting(req.body);
+    } else {
+      Object.assign(settings, req.body);
+    }
+    console.log("FILE:", req.file);
+    if (req.file) {
+      settings.bannerImage = req.file.path;
+    }
+    await settings.save();
+    console.log("BANNER:", settings.bannerImage);
+    req.flash('success', 'Pengaturan berhasil disimpan!');
+    res.redirect('/admin/settings');
+  } 
+  catch(err) {
+    console.error(err);
+    res.status(500).send(err.message);
   }
-  if (req.file) { 
-    settings.bannerImage = req.file.path; 
-  }
-  await settings.save();
-  req.flash('success', 'Pengaturan berhasil disimpan!');
-  res.redirect('/admin/settings');
 });
 
 // ==========================================
