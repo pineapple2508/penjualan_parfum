@@ -1,184 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Register - Faturé Store</title>
-  <!-- Panggil Font Awesome untuk Ikon -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - FATURÉ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; }
     body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f1c36, #1e3c72);
+      display: flex; justify-content: center; align-items: center;
+      position: relative; overflow-y: auto; padding: 40px 20px;
     }
-
-    /* Dekorasi Lingkaran di Background */
-    .circle {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
+    .circle { position: fixed; border-radius: 50%; opacity: 0.1; pointer-events: none; z-index: 0; }
+    .c1 { width: 400px; height: 400px; background: #FFD700; top: -100px; left: -100px; }
+    .c2 { width: 300px; height: 300px; background: #ffffff; bottom: -80px; right: -80px; }
+    .c3 { width: 150px; height: 150px; background: #FFD700; top: 20%; right: 10%; opacity: 0.05; }
+    
+    .auth-card {
+      background: #ffffff; padding: 40px 35px; border-radius: 24px;
+      width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative; z-index: 10; margin: 20px 0;
     }
-    .circle-1 { width: 300px; height: 300px; top: -50px; left: -50px; }
-    .circle-2 { width: 150px; height: 150px; bottom: 50px; right: -30px; }
-    .circle-3 { width: 80px; height: 80px; top: 40%; left: 20%; }
+    .auth-header { text-align: center; margin-bottom: 30px; }
+    .auth-header h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #0f1c36; letter-spacing: 3px; }
+    .auth-header p { color: #64748b; font-size: 0.9rem; margin-top: 5px; }
 
-    .card {
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-      width: 380px;
-      text-align: center;
-      z-index: 10;
-    }
+    .alert-error { background: #fef2f2; color: #dc2626; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; text-align: center; }
 
-    .logo {
-      margin: 0 0 5px 0;
-      color: #1e3c72;
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: 4px; /* Huruf renggang */
-    }
-
-    .subtitle {
-      color: #777;
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-      position: relative;
-      text-align: left;
-    }
-
-    /* Ikon di dalam input */
-    .form-group .icon {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #aaa;
-      font-size: 16px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 15px 15px 15px 45px; /* Ruang untuk ikon */
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      box-sizing: border-box;
-      font-size: 14px;
-      color: #333;
+    .input-group {
+      display: flex; align-items: center; background: #f8fafc;
+      border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 18px;
       transition: 0.3s;
     }
-
-    .form-group input::placeholder {
-      color: #bbb;
+    .input-group:focus-within { border-color: #FFD700; box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2); }
+    
+    .input-icon {
+      width: 50px; display: flex; justify-content: center; align-items: center;
+      color: #1e3c72; font-size: 1.1rem; background: #eef2f7; 
+      border-right: 1px solid #e2e8f0; height: 100%; border-radius: 12px 0 0 12px;
+      padding: 12px 0;
     }
-
-    .form-group input:focus {
-      border-color: #FFC107;
-      outline: none;
-      box-shadow: 0 0 10px rgba(255, 193, 7, 0.25);
+    .input-group input {
+      flex: 1; border: none; outline: none; padding: 14px 15px;
+      background: transparent; font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem; color: #334155;
     }
+    .input-group input::placeholder { color: #94a3b8; }
 
-    .btn-register {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #FFD700, #FFC107); /* Tombol Kuning */
-      color: #1e3c72;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      letter-spacing: 1px;
-      margin-top: 10px;
+    .btn-auth-submit {
+      width: 100%; padding: 14px; background: #FFD700; color: #0f1c36; border: none;
+      border-radius: 50px; font-weight: 700; font-size: 1rem; letter-spacing: 1px;
+      cursor: pointer; font-family: 'Poppins', sans-serif; margin-top: 10px; transition: 0.3s;
     }
+    .btn-auth-submit:hover { background: #e4b768; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
 
-    .btn-register:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
-    }
+    .auth-footer { text-align: center; margin-top: 25px; font-size: 0.85rem; color: #64748b; }
+    .auth-footer a { color: #1e3c72; font-weight: 600; text-decoration: none; }
+    .auth-footer a:hover { color: #FFD700; }
 
-    .auth-link {
-      margin-top: 25px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .auth-link a {
-      color: #2a5298;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .auth-link a:hover {
-      text-decoration: underline;
-    }
-
-    /* Notifikasi Error */
-    .alert-error {
-      background: #ffe6e6;
-      color: #d63031;
-      border: 1px solid #fab1a0;
-      padding: 12px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      font-size: 13px;
-      text-align: center;
-    }
+    @media (max-width: 480px) { .auth-card { padding: 30px 20px; } .auth-header h2 { font-size: 2rem; } }
   </style>
 </head>
 <body>
+  <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
 
-  <!-- Dekorasi Lingkaran Background -->
-  <div class="circle circle-1"></div>
-  <div class="circle circle-2"></div>
-  <div class="circle circle-3"></div>
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>FATURÉ</h2>
+      <p>Daftar akun baru</p>
+    </div>
 
-  <div class="card">
-    <h2 class="logo">FATURÉ</h2>
-    <p class="subtitle">Daftar akun baru</p>
+    <% if (error && error.length > 0) { %><div class="alert-error"><%= error %></div><% } %>
 
-    <!-- Notifikasi Error (Flash Message) -->
-    <% if (typeof error !== 'undefined' && error.length > 0) { %>
-      <div class="alert-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
-    <% } %>
-
-    <!-- Form Register (Aksi ke /register) -->
     <form action="/register" method="POST">
-      <div class="form-group">
-        <i class="fas fa-user icon"></i>
-        <input type="text" name="username" placeholder="Masukkan username" required>
+      <div class="input-group">
+        <div class="input-icon"><i class="fas fa-user"></i></div>
+        <input type="text" name="username" placeholder="Username" required>
       </div>
-      
-      <div class="form-group">
-        <i class="fas fa-lock icon"></i>
-        <input type="password" name="password" placeholder="Buat password" required>
+      <div class="input-group">
+        <div class="input-icon"><i class="fas fa-envelope"></i></div>
+        <input type="email" name="email" placeholder="Email aktif" required>
       </div>
-
-      <div class="form-group">
-        <i class="fas fa-lock icon"></i>
+      <div class="input-group">
+        <div class="input-icon"><i class="fas fa-lock"></i></div>
+        <input type="password" name="password" placeholder="Password" required>
+      </div>
+      <div class="input-group">
+        <div class="input-icon"><i class="fas fa-lock"></i></div>
         <input type="password" name="confirmPassword" placeholder="Ulangi password" required>
       </div>
-
-      <button type="submit" class="btn-register">DAFTAR</button>
+      <button type="submit" class="btn-auth-submit">DAFTAR</button>
     </form>
 
-    <div class="auth-link">
-      Sudah punya akun? <a href="/login">Login di sini</a>
-    </div>
+    <div class="auth-footer">Sudah punya akun? <a href="/login">Login di sini</a></div>
   </div>
-
 </body>
 </html>
