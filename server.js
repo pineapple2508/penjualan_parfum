@@ -462,18 +462,24 @@ app.post('/register', async (req, res) => {
       return res.redirect('/register');
     }
 
-    const existingUser = await User.findOne({
-      $or: [
-        { username },
-        { email }
-      ]
-    });
+   const existingUser = await User.findOne({
+  username
+});
 
-    if (existingUser) {
-      req.flash('error', 'Username atau Email sudah digunakan!');
-      return res.redirect('/register');
-    }
+if (existingUser) {
+  req.flash('error', 'Username sudah digunakan!');
+  return res.redirect('/register');
+}
 
+const existingEmail = await User.findOne({
+  email,
+  isVerified: true
+});
+
+if (existingEmail) {
+  req.flash('error', 'Email sudah digunakan!');
+  return res.redirect('/register');
+}
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
