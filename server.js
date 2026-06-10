@@ -452,17 +452,7 @@ app.get('/register', (req, res) => {
   res.render('register', { title: 'Register', error: req.flash('error') }); 
 });
 
-app.post('/register', async (req, res) => {
-  try {
-
-    const { username, email, password, confirmPassword } = req.body;
-
-    if (password !== confirmPassword) {
-      req.flash('error', 'Password tidak cocok!');
-      return res.redirect('/register');
-    }
-
-   const existingUser = await User.findOne({
+const existingUser = await User.findOne({
   username
 });
 
@@ -471,10 +461,15 @@ if (existingUser) {
   return res.redirect('/register');
 }
 
+// TAMBAHKAN DI SINI
+console.log("EMAIL DARI FORM:", email);
+
 const existingEmail = await User.findOne({
   email,
   isVerified: true
 });
+
+console.log("HASIL CEK EMAIL:", existingEmail);
 
 if (existingEmail) {
   req.flash('error', 'Email sudah digunakan!');
