@@ -452,29 +452,38 @@ app.get('/register', (req, res) => {
   res.render('register', { title: 'Register', error: req.flash('error') }); 
 });
 
-const existingUser = await User.findOne({
-  username
-});
+app.post('/register', async (req, res) => {
+  try {
 
-if (existingUser) {
-  req.flash('error', 'Username sudah digunakan!');
-  return res.redirect('/register');
-}
+    const { username, email, password, confirmPassword } = req.body;
 
-// TAMBAHKAN DI SINI
-console.log("EMAIL DARI FORM:", email);
+    if (password !== confirmPassword) {
+      req.flash('error', 'Password tidak cocok!');
+      return res.redirect('/register');
+    }
 
-const existingEmail = await User.findOne({
-  email,
-  isVerified: true
-});
+    const existingUser = await User.findOne({
+      username
+    });
 
-console.log("HASIL CEK EMAIL:", existingEmail);
+    if (existingUser) {
+      req.flash('error', 'Username sudah digunakan!');
+      return res.redirect('/register');
+    }
 
-if (existingEmail) {
-  req.flash('error', 'Email sudah digunakan!');
-  return res.redirect('/register');
-}
+    console.log("EMAIL DARI FORM:", email);
+
+    const existingEmail = await User.findOne({
+      email,
+      isVerified: true
+    });
+
+    console.log("HASIL CEK EMAIL:", existingEmail);
+
+    if (existingEmail) {
+      req.flash('error', 'Email sudah digunakan!');
+      return res.redirect('/register');
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -483,22 +492,17 @@ if (existingEmail) {
       Date.now() + 5 * 60 * 1000
     );
 
-    const newUser = await User.findOneAndUpdate(
-  { email },
-  {
-    username,
-    email,
-    password: hashedPassword,
-    role: 'customer',
-    isVerified: false,
-    otp,
-    otpExpires
-  },
-  {
-    upsert: true,
-    new: true
-  }
-);
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: 'customer',
+      isVerified: false,
+      otp,
+      otpExpires
+    });
+
+    await newUser.save();
     await transporter.sendMail({
   from: process.env.EMAIL_USER,
   to: email,
