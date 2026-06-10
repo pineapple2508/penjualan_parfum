@@ -488,17 +488,22 @@ if (existingEmail) {
       Date.now() + 5 * 60 * 1000
     );
 
-    const newUser = new User({
-      username,
-      email,
-      password: hashedPassword,
-      role: 'customer',
-      isVerified: false,
-      otp,
-      otpExpires
-    });
-
-    await newUser.save();
+    const newUser = await User.findOneAndUpdate(
+  { email },
+  {
+    username,
+    email,
+    password: hashedPassword,
+    role: 'customer',
+    isVerified: false,
+    otp,
+    otpExpires
+  },
+  {
+    upsert: true,
+    new: true
+  }
+);
     await transporter.sendMail({
   from: process.env.EMAIL_USER,
   to: email,
