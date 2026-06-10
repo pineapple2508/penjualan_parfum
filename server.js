@@ -27,6 +27,14 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({ storage });
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'ejs');
@@ -485,6 +493,17 @@ app.post('/register', async (req, res) => {
     });
 
     await newUser.save();
+    await transporter.sendMail({
+  from: process.env.EMAIL_USER,
+  to: email,
+  subject: 'Kode OTP Verifikasi Akun FATURÉ',
+  html: `
+    <h2>Verifikasi Akun FATURÉ</h2>
+    <p>Kode OTP Anda:</p>
+    <h1>${otp}</h1>
+    <p>Berlaku selama 5 menit.</p>
+  `
+});
 
     console.log("OTP:", otp);
 
