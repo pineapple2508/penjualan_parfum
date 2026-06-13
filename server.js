@@ -419,10 +419,11 @@ app.post('/register', async (req, res) => {
       return res.redirect('/register');
     }
 
-    // --- SOLUSI: HAPUS AKUN LAMA YANG BELUM VERIFIKASI ---
+    // --- SOLUSI: HAPUS SEMUA AKUN LAMA YANG BELUM TERVERIFIKASI ---
+    // $ne: true akan menghapus akun yang isVerified-nya false, null, atau undefined
     await User.deleteMany({
       $or: [{ username: username }, { email: email }],
-      isVerified: false
+      isVerified: { $ne: true } 
     });
 
     // Cek apakah username atau email sudah dipakai oleh akun yang SUDAH TERVERIFIKASI
@@ -432,11 +433,7 @@ app.post('/register', async (req, res) => {
     });
 
     if (existingVerified) {
-      if (existingVerified.username === username) {
-        req.flash('error', 'Username sudah digunakan oleh akun terverifikasi!');
-      } else {
-        req.flash('error', 'Email sudah digunakan oleh akun terverifikasi!');
-      }
+      req.flash('error', 'Username atau Email sudah digunakan oleh akun yang sudah terverifikasi!');
       return res.redirect('/register');
     }
     // ----------------------------------------------------
@@ -552,7 +549,6 @@ app.get('/logout', (req, res) => {
   }); 
 });
 
-// WAJIB UNTUK VERCEL: Jangan pakai app.listen() jika sudah di production
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
