@@ -419,24 +419,22 @@ app.post('/register', async (req, res) => {
       return res.redirect('/register');
     }
 
-    // --- SOLUSI: HAPUS SEMUA AKUN LAMA YANG BELUM TERVERIFIKASI ---
-    // $ne: true akan menghapus akun yang isVerified-nya false, null, atau undefined
+    // HAPUS AKUN LAMA YANG BELUM TERVERIFIKASI
     await User.deleteMany({
       $or: [{ username: username }, { email: email }],
       isVerified: { $ne: true } 
     });
 
-    // Cek apakah username atau email sudah dipakai oleh akun yang SUDAH TERVERIFIKASI
-    const existingVerified = await User.findOne({
+    // CEK AKUN YANG SUDAH TERVERIFIKASI
+    const verifiedUser = await User.findOne({
       $or: [{ username: username }, { email: email }],
       isVerified: true
     });
 
-    if (existingVerified) {
-      req.flash('error', 'Username atau Email sudah digunakan oleh akun yang sudah terverifikasi!');
+    if (verifiedUser) {
+      req.flash('error', 'Username atau Email sudah digunakan oleh akun yang sudah terverifikasi! Gunakan yang lain.');
       return res.redirect('/register');
     }
-    // ----------------------------------------------------
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -473,14 +471,20 @@ app.post('/register', async (req, res) => {
 
   } catch (err) {
     console.log(err);
+    if (err.code === 11000) {
+       req.flash('error', 'Terjadi konflik data. Hubungi admin atau gunakan email/username lain.');
+       return res.redirect('/register');
+    }
     res.status(500).send(err.message);
   }
 });
 
+// ROUTE HALAMAN OTP (DITAMBAHKAN FLASH SUCCESS)
 app.get('/verify-otp', (req, res) => {
-  res.render('verify_otp', { error: req.flash('error') });
+  res.render('verify_otp', { error: req.flash('error'), success: req.flash('success') });
 });
 
+// ROUTE VERIFIKASI OTP
 app.post('/verify-otp', async (req, res) => {
   try {
     const { otp } = req.body;
@@ -520,6 +524,52 @@ app.post('/verify-otp', async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message);
+  }
+});
+
+// ROUTE KIRIM ULANG KODE OTP (BARU)
+app.get('/resend-otp', async (req, res) => {
+  try {
+    if (!req.session.pendingUser) {
+      req.flash('error', 'Sesi tidak ditemukan. Silakan daftar ulang.');
+      return res.redirect('/register');
+    }
+
+    const user = await User.findById(req.session.pendingUser);
+    if (!user) {
+      req.flash('error', 'User tidak ditemukan. Silakan daftar ulang.');
+      return res.redirect('/register');
+    }
+
+    // Buat kode OTP baru
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
+
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Kirim ulang email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Kode OTP Verifikasi Akun FATURÉ (Kirim Ulang)',
+      html: `
+        <h2>Verifikasi Akun FATURÉ</h2>
+        <p>Kode OTP baru Anda:</p>
+        <h1>${otp}</h1>
+        <p>Berlaku selama 5 menit.</p>
+      `
+    });
+
+    console.log("NEW OTP:", otp);
+    req.flash('success', 'Kode OTP baru telah dikirim ke email Anda!');
+    res.redirect('/verify-otp');
+
+  } catch (err) {
+    console.log(err);
+    req.flash('error', 'Gagal mengirim ulang kode OTP.');
+    res.redirect('/verify-otp');
   }
 });
 
