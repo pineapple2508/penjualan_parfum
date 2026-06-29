@@ -1,8 +1,101 @@
 <%- include('partials/header', { title: 'Faturé Store' }) %>
 
 <section class="hero">
-  <img src="https://res.cloudinary.com/daizlssgm/image/upload/v1780991774/Banner_parfum_sn0mpd.png" alt="Faturé Banner" class="hero-bg">
-  
+  <style>
+    /* ===== CSS HERO UTAMAKAN RESPONSIF KETAT ===== */
+    .hero {
+      background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("https://res.cloudinary.com/daizlssgm/image/upload/v1780991774/Banner_parfum_sn0mpd.png");
+      width: 100%;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-content {
+      position: absolute;
+      bottom: 21.5%;
+      left: 41.5%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: auto;
+      padding: 0;
+      z-index: 10;
+    }
+    .hero h1, .hero p { display: none !important; }
+    .hero-buttons { display: flex; justify-content: center; align-items: center; gap: 10px; }
+    
+    .btn-primary {
+      width: 135px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50px; background: #e4b768; color: #111;
+      text-decoration: none; font-size: 0.75rem; font-weight: 700;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover { background: #f1c982; transform: scale(1.05); }
+    
+    .btn-secondary {
+      width: 135px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50px; border: 1.5px solid #fff;
+      background: transparent; color: #fff;
+      text-decoration: none; font-size: 0.75rem; font-weight: 700;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.05); }
+
+    /* ===== DESKTOP LARGE (≥1440px) ===== */
+    @media (min-width: 1440px) {
+      .hero-content { left: 42%; bottom: 22%; }
+    }
+    /* ===== DESKTOP MEDIUM (1200px–1439px) ===== */
+    @media (max-width: 1439px) and (min-width: 1200px) {
+      .hero-content { left: 43%; bottom: 20%; }
+    }
+    /* ===== TABLET LANDSCAPE (993px–1199px) ===== */
+    @media (max-width: 1199px) and (min-width: 993px) {
+      .hero-content { left: 48%; bottom: 18%; }
+      .btn-primary, .btn-secondary { width: 130px; height: 36px; font-size: 0.72rem; }
+    }
+    /* ===== TABLET PORTRAIT (768px–992px) ===== */
+    @media (max-width: 992px) {
+      .hero-content { left: 50%; bottom: 14%; }
+      .btn-primary, .btn-secondary { width: 125px; height: 36px; font-size: 0.7rem; }
+    }
+
+    /* ===== KHUSUS MOBILE TAMPILAN HP (≤768px) ===== */
+    @media (max-width: 768px) {
+      .hero {
+        height: 38vh !important; /* Memaksa tinggi banner proposional di HP agar model tidak terpotong */
+        background-size: contain !important; /* Gambar wajib utuh masuk layar */
+        background-repeat: no-repeat;
+        background-position: center top;
+        background-color: #050b14; /* Menyamakan warna latar hitam bawaan banner */
+      }
+      .hero-content {
+        position: relative !important;
+        bottom: unset !important;
+        left: unset !important;
+        transform: unset !important;
+        margin: 15px auto 0 !important;
+        display: flex;
+        justify-content: center;
+        width: 100% !important;
+      }
+      .hero-buttons {
+        gap: 10px;
+        width: 100%;
+        padding: 0 15px;
+      }
+      .btn-primary, .btn-secondary {
+        flex: 1;
+        max-width: 160px;
+        height: 42px;
+        font-size: 0.78rem;
+      }
+    }
+  </style>
+
   <div class="hero-content">
     <h1><%= settings.homeTitle %></h1>
     <p><%= settings.homeSubtitle %></p>
@@ -53,5 +146,89 @@
     </div>
   </div>
 </section>
+
+<style>
+  /* ===== STYLE BAGIAN PRODUK & UTILITAS ===== */
+  .about-section { background: #f8fafc; padding: 80px 0; text-align: center; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+  .section-title {
+    font-size: 2.5rem; color: #1e3c72;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 20px; position: relative;
+    display: block; text-align: center; width: 100%;
+  }
+  .section-title::after {
+    content: ''; position: absolute; bottom: -10px;
+    left: 50%; transform: translateX(-50%);
+    width: 60px; height: 4px;
+    background: #FFD700; border-radius: 2px;
+  }
+  .about-text {
+    max-width: 700px; margin: 30px auto 0;
+    color: #64748b; line-height: 1.8; font-size: 1.1rem;
+  }
+
+  .products-section { padding: 80px 0; background: white; }
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px; margin-top: 40px;
+  }
+  .product-card {
+    background: white; border-radius: 15px; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s; border: 1px solid #e2e8f0;
+  }
+  .product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(30, 60, 114, 0.15);
+  }
+  .product-image {
+    width: 100%; height: 250px; object-fit: cover;
+    border-bottom: 3px solid #FFD700;
+  }
+  .card-body { padding: 25px; text-align: center; }
+  .card-body h3 {
+    font-family: 'Playfair Display', serif;
+    margin: 0 0 10px 0; color: #0f1c36; font-size: 1.3rem;
+  }
+  .price { font-size: 1.5rem; font-weight: 800; color: #1e3c72; margin: 0 0 15px; }
+  .description {
+    font-size: 0.9rem; color: #64748b; line-height: 1.6;
+    margin-bottom: 25px; min-height: 50px;
+  }
+  .btn-group { display: flex; gap: 10px; justify-content: center; }
+  .btn-buy {
+    display: block; flex: 1; background: #FFD700; color: #0f1c36;
+    padding: 12px; text-decoration: none; border-radius: 8px;
+    font-weight: 700; font-size: 0.9rem; text-align: center; transition: 0.3s;
+  }
+  .btn-buy:hover { background: #0f1c36; color: #FFD700; }
+  .form-cart { margin: 0; width: auto; }
+  .btn-cart {
+    background: white; color: #0f1c36; border: 2px solid #0f1c36;
+    padding: 12px 15px; border-radius: 8px; font-size: 1rem;
+    cursor: pointer; transition: 0.3s;
+  }
+  .btn-cart:hover { background: #0f1c36; color: #FFD700; }
+
+  @media (max-width: 768px) {
+    .about-section { padding: 40px 0; }
+    .about-text { font-size: 1rem; }
+    .section-title { font-size: 2rem; }
+    .products-section { padding: 40px 0; }
+    .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+    .product-image { height: 180px; }
+  }
+  @media (max-width: 480px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } /* Menampilkan 2 baris produk di HP agar rapi */
+    .product-image { height: 140px; }
+    .card-body { padding: 10px; }
+    .card-body h3 { font-size: 1rem; }
+    .price { font-size: 1.1rem; }
+    .description { display: none; } /* Sembunyikan deskripsi panjang di HP biar ringkas */
+    .section-title { font-size: 1.6rem; }
+  }
+</style>
 
 <%- include('partials/footer') %>
