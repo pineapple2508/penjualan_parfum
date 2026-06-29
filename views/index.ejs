@@ -19,6 +19,7 @@
       text-align: center;
       width: auto;
       padding: 0;
+      z-index: 10;
     }
     .hero h1, .hero p { display: none !important; }
     .hero-buttons { display: flex; justify-content: center; align-items: center; gap: 10px; }
@@ -65,44 +66,52 @@
     /* ===== MOBILE (≤768px) ===== */
     @media (max-width: 768px) {
       .hero {
-        height: 100vh;
-        background-size: cover;
+        height: 50vh;
+        background-size: contain;
         background-repeat: no-repeat;
-        background-position: center 30%;
-        background-color: #0f1c36;
+        background-position: center bottom;
+        background-color: #050b14;
       }
       .hero-content {
-        bottom: 7%;
-        left: 50%;
+        position: relative;
+        bottom: unset;
+        left: unset;
+        transform: unset;
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
       }
       .hero-buttons {
-        gap: 8px;
+        gap: 12px;
+        width: 100%;
+        padding: 0 20px;
       }
       .btn-primary, .btn-secondary {
-        width: 140px;
-        height: 40px;
-        font-size: 0.72rem;
+        width: 50%;
+        height: 44px;
+        font-size: 0.8rem;
       }
     }
 
     /* ===== SMALL PHONE (≤480px) ===== */
     @media (max-width: 480px) {
       .hero {
-        height: 100vh;
-        background-position: center 25%;
+        height: 42vh;
+        background-position: center top;
       }
       .hero-content {
-        bottom: 6%;
-        left: 50%;
+        margin-top: 15px;
       }
       .hero-buttons {
-        flex-direction: column;
-        gap: 10px;
+        flex-direction: row;
+        gap: 8px;
       }
       .btn-primary, .btn-secondary {
-        width: 180px;
-        height: 42px;
-        font-size: 0.75rem;
+        width: 100%;
+        max-width: 160px;
+        height: 40px;
+        font-size: 0.78rem;
       }
     }
   </style>
