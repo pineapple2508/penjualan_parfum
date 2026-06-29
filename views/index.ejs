@@ -2,7 +2,7 @@
 
 <section class="hero">
   <style>
-    /* ===== CSS HERO UTAMAKAN RESPONSIF KETAT ===== */
+    /* ===== CSS HERO (DESKTOP & RESPONSIVE) ===== */
     .hero {
       background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("https://res.cloudinary.com/daizlssgm/image/upload/v1780991774/Banner_parfum_sn0mpd.png");
       width: 100%;
@@ -44,54 +44,54 @@
     }
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.05); }
 
-    /* ===== DESKTOP LARGE (≥1440px) ===== */
-    @media (min-width: 1440px) {
-      .hero-content { left: 42%; bottom: 22%; }
-    }
-    /* ===== DESKTOP MEDIUM (1200px–1439px) ===== */
-    @media (max-width: 1439px) and (min-width: 1200px) {
-      .hero-content { left: 43%; bottom: 20%; }
-    }
-    /* ===== TABLET LANDSCAPE (993px–1199px) ===== */
+    /* ===== DESKTOP MEDIA QUERIES ===== */
+    @media (min-width: 1440px) { .hero-content { left: 42%; bottom: 22%; } }
+    @media (max-width: 1439px) and (min-width: 1200px) { .hero-content { left: 43%; bottom: 20%; } }
     @media (max-width: 1199px) and (min-width: 993px) {
       .hero-content { left: 48%; bottom: 18%; }
       .btn-primary, .btn-secondary { width: 130px; height: 36px; font-size: 0.72rem; }
     }
-    /* ===== TABLET PORTRAIT (768px–992px) ===== */
     @media (max-width: 992px) {
       .hero-content { left: 50%; bottom: 14%; }
       .btn-primary, .btn-secondary { width: 125px; height: 36px; font-size: 0.7rem; }
     }
 
-    /* ===== KHUSUS MOBILE TAMPILAN HP (≤768px) ===== */
+    /* ===== PERBAIKAN TOTAL TAMPILAN MOBILE (HP) ===== */
     @media (max-width: 768px) {
       .hero {
-        height: 38vh !important; /* Memaksa tinggi banner proposional di HP agar model tidak terpotong */
-        background-size: contain !important; /* Gambar wajib utuh masuk layar */
+        height: auto !important;
+        min-height: unset !important;
+        padding-top: 45vw !important; /* Menghitung aspek rasio agar tinggi container mengikuti banner utuh */
+        background-size: contain !important; /* Memastikan banner kelihatan full dari ujung ke ujung */
         background-repeat: no-repeat;
         background-position: center top;
-        background-color: #050b14; /* Menyamakan warna latar hitam bawaan banner */
+        background-color: #050b14;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
       }
       .hero-content {
         position: relative !important;
         bottom: unset !important;
         left: unset !important;
         transform: unset !important;
-        margin: 15px auto 0 !important;
+        margin: 0 auto 20px auto !important; /* Tombol ditaruh tepat di bawah gambar banner */
+        width: 100% !important;
         display: flex;
         justify-content: center;
-        width: 100% !important;
       }
       .hero-buttons {
-        gap: 10px;
-        width: 100%;
+        flex-direction: row !important; /* Menjaga tombol berjejer menyamping seperti desktop */
+        gap: 12px !important;
+        width: auto !important;
         padding: 0 15px;
       }
       .btn-primary, .btn-secondary {
-        flex: 1;
-        max-width: 160px;
-        height: 42px;
-        font-size: 0.78rem;
+        width: 135px !important; /* Mengembalikan ukuran font & tombol persis seperti desktop */
+        height: 38px !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        flex: unset !important;
       }
     }
   </style>
@@ -148,7 +148,7 @@
 </section>
 
 <style>
-  /* ===== STYLE BAGIAN PRODUK & UTILITAS ===== */
+  /* ===== CSS LAYOUT PRODUK & FOOTER ===== */
   .about-section { background: #f8fafc; padding: 80px 0; text-align: center; }
   .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
   .section-title {
@@ -212,22 +212,22 @@
   }
   .btn-cart:hover { background: #0f1c36; color: #FFD700; }
 
+  /* ===== PENGATURAN PRODUK MENJADI 1 KOLOM DI HP ===== */
   @media (max-width: 768px) {
-    .about-section { padding: 40px 0; }
+    .about-section { padding: 50px 0; }
     .about-text { font-size: 1rem; }
     .section-title { font-size: 2rem; }
-    .products-section { padding: 40px 0; }
-    .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-    .product-image { height: 180px; }
-  }
-  @media (max-width: 480px) {
-    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } /* Menampilkan 2 baris produk di HP agar rapi */
-    .product-image { height: 140px; }
-    .card-body { padding: 10px; }
-    .card-body h3 { font-size: 1rem; }
-    .price { font-size: 1.1rem; }
-    .description { display: none; } /* Sembunyikan deskripsi panjang di HP biar ringkas */
-    .section-title { font-size: 1.6rem; }
+    .products-section { padding: 50px 0; }
+    
+    /* Mengubah grid agar memaksa produk berjejer satu per satu ke bawah */
+    .product-grid { 
+      grid-template-columns: 1fr !important; 
+      gap: 25px; 
+      max-width: 340px; 
+      margin: 30px auto 0 auto; 
+    }
+    .product-image { height: 260px; }
+    .card-body { padding: 20px; }
   }
 </style>
 
