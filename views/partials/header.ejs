@@ -8,8 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-    
-    /* Mengunci total lebar body agar tidak bocor ke kanan */
     html, body { 
       margin: 0; 
       padding: 0; 
@@ -142,7 +140,7 @@
 
     .content { padding: 0; min-height: calc(100vh - 150px); width: 100% !important; overflow-x: hidden !important; }
 
-    /* ===== PERBAIKAN TOTAL LAYAR MOBILE (≤900px) ===== */
+    /* ===== RESPONSIVE MOBILE SINKRON ===== */
     @media (max-width: 900px) {
       .navbar {
         padding: 0 16px;
@@ -154,7 +152,6 @@
       }
       .hamburger { display: flex; }
 
-      /* Mengubah posisi menu geser agar sinkron dengan toggle class .active */
       .nav-right {
         position: fixed !important;
         top: 60px !important;
@@ -167,13 +164,12 @@
         gap: 0 !important;
         padding: 0 !important;
         overflow-y: auto !important;
-        transform: translateX(100%) !important; /* Tersembunyi default */
+        transform: translateX(100%) !important;
         transition: transform 0.3s ease-in-out !important;
         box-shadow: -5px 0 30px rgba(0,0,0,0.5);
         z-index: 1000 !important;
       }
       
-      /* Trigger pemanggil menu */
       .navbar.active .nav-right {
         transform: translateX(0) !important;
       }
