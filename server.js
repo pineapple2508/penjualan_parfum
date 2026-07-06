@@ -479,7 +479,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// ROUTE HALAMAN OTP (DITAMBAHKAN FLASH SUCCESS)
+// ROUTE HALAMAN OTP
 app.get('/verify-otp', (req, res) => {
   res.render('verify_otp', { error: req.flash('error'), success: req.flash('success') });
 });
@@ -527,7 +527,7 @@ app.post('/verify-otp', async (req, res) => {
   }
 });
 
-// ROUTE KIRIM ULANG KODE OTP (BARU)
+// ROUTE KIRIM ULANG KODE OTP
 app.get('/resend-otp', async (req, res) => {
   try {
     if (!req.session.pendingUser) {
@@ -541,7 +541,6 @@ app.get('/resend-otp', async (req, res) => {
       return res.redirect('/register');
     }
 
-    // Buat kode OTP baru
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
 
@@ -549,7 +548,6 @@ app.get('/resend-otp', async (req, res) => {
     user.otpExpires = otpExpires;
     await user.save();
 
-    // Kirim ulang email
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: user.email,
@@ -573,12 +571,28 @@ app.get('/resend-otp', async (req, res) => {
   }
 });
 
-// ROUTE HAPUS AKUN CUSTOMER
-app.get('/delete-account', isLogin, async (req, res) => {
+// ==========================================
+// HAPUS AKUN (POST - AMAN)
+// ==========================================
+app.post('/delete-account', isLogin, async (req, res) => {
   try {
     const userId = req.session.user._id;
+
+    // 1. Hapus order items terkait user
+    const orders = await Order.find({ user_id: userId });
+    const orderIds = orders.map(o => o._id);
+    await OrderItem.deleteMany({ order_id: { $in: orderIds } });
+
+    // 2. Hapus orders
+    await Order.deleteMany({ user_id: userId });
+
+    // 3. Hapus data customer
     await Customer.deleteOne({ user_id: userId });
+
+    // 4. Hapus user
     await User.findByIdAndDelete(userId);
+
+    // 5. Hapus session & redirect
     req.session.destroy((err) => {
       if (err) {
         console.log(err);
@@ -592,6 +606,9 @@ app.get('/delete-account', isLogin, async (req, res) => {
   }
 });
 
+// ==========================================
+// LOGOUT
+// ==========================================
 app.get('/logout', (req, res) => { 
   req.session.destroy((err) => { 
     if (err) return res.send('Gagal logout'); 
