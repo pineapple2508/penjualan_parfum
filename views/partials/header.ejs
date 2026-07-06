@@ -2,21 +2,13 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %> - Faturé</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-    html, body { 
-      margin: 0; 
-      padding: 0; 
-      font-family: 'Poppins', sans-serif; 
-      background-color: #f8f9fa; 
-      color: #333; 
-      overflow-x: hidden !important;
-      width: 100% !important;
-    }
+    body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f8f9fa; color: #333; }
 
     /* ===== NAVBAR ===== */
     .navbar {
@@ -31,7 +23,6 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      width: 100% !important;
     }
 
     .nav-brand .brand-link {
@@ -87,6 +78,7 @@
       border: 1px solid #FFD700;
       cursor: pointer;
       transition: 0.3s;
+      display: inline-block;
     }
     .btn-logout:hover { background: #FFD700; color: #0f1c36; }
 
@@ -99,6 +91,7 @@
       font-weight: 600;
       font-size: 13px;
       transition: background 0.3s;
+      display: inline-block;
     }
     .btn-auth:hover { background: #FFD700; }
 
@@ -110,7 +103,7 @@
       align-items: center;
       gap: 5px;
       cursor: pointer;
-      z-index: 1050;
+      z-index: 1001;
       width: 42px;
       height: 42px;
       border-radius: 8px;
@@ -138,9 +131,80 @@
     }
     .nav-overlay.active { display: block; }
 
-    .content { padding: 0; min-height: calc(100vh - 150px); width: 100% !important; overflow-x: hidden !important; }
+    .content { padding: 0; min-height: calc(100vh - 150px); }
 
-    /* ===== RESPONSIVE MOBILE SINKRON ===== */
+    /* ===== MODAL HAPUS AKUN ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-box .modal-icon {
+      width: 56px; height: 56px;
+      background: #fee2e2;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .modal-box .modal-icon i { color: #dc2626; font-size: 24px; }
+    .modal-box h3 {
+      font-family: 'Playfair Display', serif;
+      color: #0f1c36;
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+    }
+    .modal-box p {
+      color: #64748b;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin: 0 0 24px;
+    }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions a, .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      text-align: center;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-cancel {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .btn-cancel:hover { background: #e2e8f0; }
+    .btn-delete-confirm {
+      background: #dc2626;
+      color: #fff;
+    }
+    .btn-delete-confirm:hover { background: #b91c1c; }
+
+    /* ===== MOBILE (≤900px) ===== */
     @media (max-width: 900px) {
       .navbar {
         padding: 0 16px;
@@ -153,25 +217,24 @@
       .hamburger { display: flex; }
 
       .nav-right {
-        position: fixed !important;
-        top: 60px !important;
-        right: 0 !important;
-        width: 280px !important;
-        height: calc(100vh - 60px) !important;
-        background: linear-gradient(180deg, #0d1a30, #162d54) !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 0 !important;
-        padding: 0 !important;
-        overflow-y: auto !important;
-        transform: translateX(100%) !important;
-        transition: transform 0.3s ease-in-out !important;
+        position: fixed;
+        top: 60px;
+        right: 0;
+        width: 280px;
+        height: calc(100vh - 60px);
+        background: linear-gradient(180deg, #0d1a30, #162d54);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: -5px 0 30px rgba(0,0,0,0.5);
-        z-index: 1000 !important;
+        z-index: 1000;
       }
-      
       .navbar.active .nav-right {
-        transform: translateX(0) !important;
+        transform: translateX(0);
       }
 
       .nav-links {
@@ -186,8 +249,10 @@
         padding: 13px 24px;
         border-radius: 0;
         font-size: 15px;
+        transition: all 0.2s;
       }
-      .nav-links a:hover {
+      .nav-links a:hover,
+      .nav-links a:active {
         background: rgba(255, 215, 0, 0.1);
         padding-left: 30px;
         color: #FFD700;
@@ -204,6 +269,7 @@
         padding: 8px 0 16px;
         font-size: 15px;
         border-bottom: 1px solid rgba(255,255,255,0.08);
+        margin-bottom: 4px;
       }
       .nav-auth .btn-logout,
       .nav-auth .btn-auth {
@@ -213,15 +279,21 @@
         font-size: 14px;
       }
 
-      .navbar.active .hamburger span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-      .navbar.active .hamburger span:nth-child(2) { opacity: 0; }
-      .navbar.active .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+      .navbar.active .hamburger span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      .navbar.active .hamburger span:nth-child(2) {
+        opacity: 0;
+      }
+      .navbar.active .hamburger span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+      }
     }
 
     @media (max-width: 480px) {
       .navbar { padding: 0 12px; height: 56px; }
       .nav-brand .brand-link { font-size: 20px; letter-spacing: 2px; }
-      .nav-right { top: 56px !important; width: 75% !important; height: calc(100vh - 56px) !important; }
+      .nav-right { top: 56px; width: 100%; height: calc(100vh - 56px); }
     }
   </style>
 </head>
@@ -262,6 +334,9 @@
       <% if (user) { %>
         <span><i class="fas fa-user-circle"></i> <%= user.username %></span>
         <a href="/logout" class="btn-logout">Keluar</a>
+        <% if (user.role !== 'admin') { %>
+          <a href="javascript:void(0)" class="btn-logout" style="border-color: #dc2626; color: #dc2626;" onclick="document.getElementById('deleteModal').classList.add('active')">Hapus Akun</a>
+        <% } %>
       <% } else { %>
         <a href="/login" class="btn-auth">Masuk</a>
         <a href="/register" class="btn-auth">Daftar</a>
@@ -272,13 +347,30 @@
 
 <div class="nav-overlay" id="nav-overlay" onclick="toggleMenu()"></div>
 
+<!-- MODAL HAPUS AKUN -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h3>Hapus Akun?</h3>
+    <p>Semua data kamu termasuk pesanan dan keranjang akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.</p>
+    <div class="modal-actions">
+      <a href="javascript:void(0)" class="btn-cancel" onclick="document.getElementById('deleteModal').classList.remove('active')">Batal</a>
+      <form action="/delete-account" method="POST" style="flex:1; margin:0;">
+        <button type="submit" class="btn-delete-confirm">Ya, Hapus</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 function toggleMenu() {
   document.getElementById('navbar').classList.toggle('active');
   document.getElementById('nav-overlay').classList.toggle('active');
 }
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.nav-right a').forEach(function(link) {
+  document.querySelectorAll('.nav-right a:not([onclick])').forEach(function(link) {
     link.addEventListener('click', function() {
       if (window.innerWidth <= 900) {
         document.getElementById('navbar').classList.remove('active');
